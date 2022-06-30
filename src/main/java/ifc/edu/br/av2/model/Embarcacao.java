@@ -6,19 +6,19 @@ package ifc.edu.br.av2.model;
 
 /**
  *
- * @author andre
+ * @author User
  */
-public class Usuario {
+public class Embarcacao {
     
     private String nome;
-    private String senha;
+    private String tipo;
 
-    public Usuario(String nome, String senha) {
+    public Embarcacao(String nome, String tipo) {
         this.nome = nome;
-        this.senha = senha;
+        this.tipo = tipo;
     }
 
-    public Usuario() {
+    public Embarcacao() {
     }
 
     public String getNome() {
@@ -29,12 +29,12 @@ public class Usuario {
         this.nome = nome;
     }
 
-    public String getSenha() {
-        return senha;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
     
 }
