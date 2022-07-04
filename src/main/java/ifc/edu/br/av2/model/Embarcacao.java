@@ -1,32 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package ifc.edu.br.av2.model;
 
-/**
- *
- * @author User
- */
 public class Embarcacao {
     
-    private String nome;
+    private int tamanho;
     private String tipo;
+    private Usuario proprietario;
 
-    public Embarcacao(String nome, String tipo) {
-        this.nome = nome;
+    public Embarcacao(int tamanho, String tipo, Usuario proprietario) {
+        this.tamanho = tamanho;
         this.tipo = tipo;
+        this.proprietario = proprietario;
     }
 
     public Embarcacao() {
     }
 
-    public String getNome() {
-        return nome;
+    public int getTamanho() {
+        return tamanho;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setTamanho(int tamanho) {
+        this.tamanho = tamanho;
     }
 
     public String getTipo() {
@@ -36,5 +30,13 @@ public class Embarcacao {
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
-    
+
+    public Usuario getProprietario() {
+        return proprietario;
+    }
+
+    public void setProprietario(Usuario proprietario) {
+        this.proprietario = proprietario;
+    }
+
 }

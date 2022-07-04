@@ -1,20 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package ifc.edu.br.av2.model;
 
-/**
- *
- * @author andre
- */
 public class Usuario {
     
     private String nome;
+    private String cpf;
+    private String email;
     private String senha;
 
-    public Usuario(String nome, String senha) {
+    public Usuario(String nome, String cpf, String email, String senha) {
         this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
         this.senha = senha;
     }
 
@@ -29,6 +25,22 @@ public class Usuario {
         this.nome = nome;
     }
 
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getSenha() {
         return senha;
     }
@@ -36,5 +48,5 @@ public class Usuario {
     public void setSenha(String senha) {
         this.senha = senha;
     }
-    
+
 }
