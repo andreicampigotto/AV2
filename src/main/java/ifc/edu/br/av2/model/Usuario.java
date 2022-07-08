@@ -1,7 +1,8 @@
 package ifc.edu.br.av2.model;
 
-public class Usuario {
+public abstract class Usuario {
     
+    private long id;
     private String nome;
     private String cpf;
     private String email;
@@ -17,6 +18,18 @@ public class Usuario {
     public Usuario() {
     }
 
+    public abstract long getIdUsuario();
+    
+    protected abstract void createRecord();
+
+    protected long getId() {
+        return id;
+    }
+    
+    public void setId(long id) {
+        this.id = id;
+    }
+    
     public String getNome() {
         return nome;
     }
