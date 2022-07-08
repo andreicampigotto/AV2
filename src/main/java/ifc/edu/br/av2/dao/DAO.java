@@ -68,11 +68,11 @@ public class DAO {
             if (o.getClass().isInstance(Cliente.class)) {
                 inserirUsuario((Usuario) o, conn);
                 inserirCliente((Cliente) o, conn);
-            } else if (o.getClass().isInstance(Embarcacao.class)) {
-                inserirEmbarcacao((Embarcacao) o, conn);
             } else if (o.getClass().isInstance(Vendedor.class)) {
                 inserirUsuario((Usuario) o, conn);
                 inserirVendedor((Vendedor) o, conn);
+            } else if (o.getClass().isInstance(Embarcacao.class)) {
+                inserirEmbarcacao((Embarcacao) o, conn);
             }
             conn.commit();
             conn.close();
@@ -84,7 +84,7 @@ public class DAO {
     private void inserirUsuario(Usuario u, Connection conn) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(" insert into usuario "
                 + " (id, nome, cpf, email, senha) "
-                + " values (?, ?, ?, ?) ");
+                + " values (?, ?, ?, ?, ?) ");
         long id = Long.parseLong(executeQuery("usuario", null, "max(id) + 1").get(0).toString());
         u.setId(id);
         ps.setLong(1, id);
@@ -107,7 +107,7 @@ public class DAO {
     private void inserirVendedor(Vendedor v, Connection conn) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(" insert into vendedor "
                 + " (id, matricula, idUsuario) "
-                + " values (?, ?) ");
+                + " values (?, ?, ?) ");
         ps.setLong(1, Long.parseLong(executeQuery("vendedor", null, "max(id) + 1").get(0).toString()));
         ps.setString(2, v.getMatricula());
         ps.setLong(3, v.getIdUsuario());
@@ -117,7 +117,7 @@ public class DAO {
     private void inserirEmbarcacao(Embarcacao e, Connection conn) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(" insert into embarcacao "
                 + " (id, tamanho, tipo, idUsuario) "
-                + " values (?, ?, ?) ");
+                + " values (?, ?, ?, ?) ");
         ps.setLong(1, Long.parseLong(executeQuery("embarcacao", null, "max(id) + 1").get(0).toString()));
         ps.setInt(2, e.getTamanho());
         ps.setString(3, e.getTipo());
