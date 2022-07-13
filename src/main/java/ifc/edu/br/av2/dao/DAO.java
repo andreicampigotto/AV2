@@ -12,15 +12,21 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DAO {
 
+    public DAO(boolean createTables) {
+        if (createTables)
+            this.createTables();
+    }
+    
     public DAO() {
     }
     
-    public void createTables() {
+    private void createTables() {
         try {
             Connection conn = ConnectionFactory.connection();
             Statement stmt = conn.createStatement();
@@ -85,7 +91,7 @@ public class DAO {
         PreparedStatement ps = conn.prepareStatement(" insert into usuario "
                 + " (id, nome, cpf, email, senha) "
                 + " values (?, ?, ?, ?, ?) ");
-        long id = Long.parseLong(executeQuery("usuario", null, "max(id) + 1").get(0).toString());
+        long id = Long.parseLong(executeQuery("usuario", "max(id) + 1", null).get(0).toString());
         u.setId(id);
         ps.setLong(1, id);
         ps.setString(2, u.getNome());
@@ -99,7 +105,7 @@ public class DAO {
         PreparedStatement ps = conn.prepareStatement(" insert into cliente "
                 + " (id, idUsuario) "
                 + " values (?, ?) ");
-        ps.setLong(1, Long.parseLong(executeQuery("cliente", null, "max(id) + 1").get(0).toString()));
+        ps.setLong(1, Long.parseLong(executeQuery("cliente", "max(id) + 1", null).get(0).toString()));
         ps.setLong(2, c.getIdUsuario());
         ps.executeUpdate();
     }
@@ -108,7 +114,7 @@ public class DAO {
         PreparedStatement ps = conn.prepareStatement(" insert into vendedor "
                 + " (id, matricula, idUsuario) "
                 + " values (?, ?, ?) ");
-        ps.setLong(1, Long.parseLong(executeQuery("vendedor", null, "max(id) + 1").get(0).toString()));
+        ps.setLong(1, Long.parseLong(executeQuery("vendedor", "max(id) + 1", null).get(0).toString()));
         ps.setString(2, v.getMatricula());
         ps.setLong(3, v.getIdUsuario());
         ps.executeUpdate();
@@ -118,7 +124,7 @@ public class DAO {
         PreparedStatement ps = conn.prepareStatement(" insert into embarcacao "
                 + " (id, tamanho, tipo, idUsuario) "
                 + " values (?, ?, ?, ?) ");
-        ps.setLong(1, Long.parseLong(executeQuery("embarcacao", null, "max(id) + 1").get(0).toString()));
+        ps.setLong(1, Long.parseLong(executeQuery("embarcacao", "max(id) + 1", null).get(0).toString()));
         ps.setInt(2, e.getTamanho());
         ps.setString(3, e.getTipo());
         ps.setLong(4, e.getProprietario().getIdUsuario());
@@ -130,10 +136,10 @@ public class DAO {
     }
     
     private List executeQuery(String tableName, String restrictions) {
-        return executeQuery(tableName, restrictions, null);
+        return executeQuery(tableName, null, restrictions);
     }
     
-    private List executeQuery(String tableName, String restrictions, String columns) {
+    private List executeQuery(String tableName, String columns, String restrictions) {
         List<?> res = new ArrayList<>();
         try {
             Connection conn = ConnectionFactory.connection();
@@ -145,6 +151,29 @@ public class DAO {
                 sb.append(" where ").append(restrictions);
             }
             ResultSet rs = stmt.executeQuery(sb.toString());
+            conn.close();
+            res = Utilitarios.resultSetToList(rs);
+        } catch (SQLException ex) {
+            Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return res;
+    }
+    
+    public List executePreparedQuery(String tableName, String columns, String restrictions, List<?> parameters) {
+        List<?> res = new ArrayList<>();
+        try {
+            Connection conn = ConnectionFactory.connection();
+            StringBuilder sb = new StringBuilder();
+            sb.append(" select ").append(columns != null ? columns : "*")
+                    .append(" from ").append(tableName);
+            if (restrictions != null) {
+                sb.append(" where ").append(restrictions);
+            }
+            PreparedStatement ps = conn.prepareStatement(sb.toString());
+            for (int i = 1; i < parameters.size(); i++) {
+                ps.setObject(i, parameters.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
             conn.close();
             res = Utilitarios.resultSetToList(rs);
         } catch (SQLException ex) {
@@ -169,7 +198,7 @@ public class DAO {
         return executeQuery("usuario");
     }
     
-    private Cliente consultarCliente(long id) {
+    public Cliente consultarCliente(long id) {
         Cliente c = new Cliente();
         StringBuilder sb = new StringBuilder();
         sb.append(" a.idUsuario = b.id ")
@@ -181,7 +210,7 @@ public class DAO {
         return c;
     }
     
-    private Vendedor consultarVendedor(long id) {
+    public Vendedor consultarVendedor(long id) {
         Vendedor v = new Vendedor();
         StringBuilder sb = new StringBuilder();
         sb.append(" a.idUsuario = b.id ")
@@ -193,7 +222,7 @@ public class DAO {
         return v;
     }
     
-    private Embarcacao consultarEmbarcacao(long id) {
+    public Embarcacao consultarEmbarcacao(long id) {
         Embarcacao e = new Embarcacao();
         Object queryRes = executeQuery("embarcacao a", "a.id = " + id).get(0);
         if (queryRes.getClass().isInstance(Embarcacao.class)) {
@@ -202,7 +231,7 @@ public class DAO {
         return e;
     }
     
-    private Usuario consultarUsuario(long id) {
+    public Usuario consultarUsuario(long id) {
         Usuario u = new Usuario() {
             @Override
             public long getIdUsuario() {
@@ -214,6 +243,24 @@ public class DAO {
             }
         };
         Object queryRes = executeQuery("usuario a", "a.id = " + id).get(0);
+        if (queryRes.getClass().isInstance(Usuario.class)) {
+            u = (Usuario) queryRes;
+        }
+        return u;
+    }
+    
+    public Usuario consultarUsuario(String restriction) {
+        Usuario u = new Usuario() {
+            @Override
+            public long getIdUsuario() {
+                return 0;
+            }
+
+            @Override
+            protected void createRecord() {
+            }
+        };
+        Object queryRes = executeQuery("usuario a", restriction).get(0);
         if (queryRes.getClass().isInstance(Usuario.class)) {
             u = (Usuario) queryRes;
         }

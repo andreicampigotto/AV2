@@ -1,9 +1,3 @@
-<%-- 
-    Document   : login
-    Created on : 30 Jun 2022, 00:36:48
-    Author     : User
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -12,6 +6,12 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1>Login</h1>
+        
+        <form method="post" action="Servlet?op=login">
+            Login: <input type="text" name="login"> <br>
+            Senha: <input type="password" name="senha"> <br>
+            <input type="submit" value="Login" />
+        </form>
     </body>
 </html>
