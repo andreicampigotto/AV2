@@ -20,17 +20,20 @@ public class DAO {
 
     public DAO(boolean createTables) {
         if (createTables)
-            this.createTables();
+            this.init();
     }
     
     public DAO() {
     }
     
-    private void createTables() {
+    private void init() {
         try {
             Connection conn = ConnectionFactory.connection();
             Statement stmt = conn.createStatement();
             StringBuilder sb = new StringBuilder();
+            sb.append(" create database if not exists jeffersonmendes_pgm4 ");
+            stmt.execute(sb.toString());
+            sb = new StringBuilder();
             sb.append(" create table if not exists usuario ")
                     .append(" (id integer not null, ")
                     .append(" nome varchar(255), ")
