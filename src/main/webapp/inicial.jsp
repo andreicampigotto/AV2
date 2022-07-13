@@ -12,6 +12,15 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <form action="Geral" method="get">
+        <br> <button type="submit" name="visualizarClientes">Visualizar todas os clientes</button>
+        <br> <button type="submit" name="visualizarVendedores">Visualizar todas os vendedores</button>
+        <br> <button type="submit" name="visualizarEmbarcacoes">Visualizar todas os Embarcações</button>
+        
+        <br> <button type="submit" name="cadastroCliente">Cadastrar novo cliente</button>
+        <br> <button type="submit" name="cadastroVendedor">Cadastrar novo vendedor</button>
+        <br> <button type="submit" name="cadastroEmbarcacao">Cadastrar nova Embarcação</button>
+        
+        </form>
     </body>
 </html>
