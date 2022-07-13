@@ -12,7 +12,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <form action="Geral" method="get">
+        <form action="Servlet" method="get">
         <br> <button type="submit" name="visualizarClientes">Visualizar todas os clientes</button>
         <br> <button type="submit" name="visualizarVendedores">Visualizar todas os vendedores</button>
         <br> <button type="submit" name="visualizarEmbarcacoes">Visualizar todas os Embarcações</button>

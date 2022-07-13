@@ -12,7 +12,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <form action="Geral" method="post">
+        <form action="Servlet" method="post">
             Matricula <input type="text" name="matricula"> <br>
             Nome: <input type="text" name="nome"> <br>
             Email: <input type="text" name="email"> <br>

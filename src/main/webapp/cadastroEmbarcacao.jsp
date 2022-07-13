@@ -12,7 +12,7 @@
         <title>JSP Page</title>
     </head>
      <body>
-        <form action="Geral" method="post">
+        <form action="Servlet" method="post">
             Tamanho: <input type="text" name="tamanho">
             Tipo: <input type="text" name="tipo"> <br>
             Proprietário: 
