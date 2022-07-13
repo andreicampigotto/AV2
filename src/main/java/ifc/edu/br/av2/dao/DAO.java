@@ -34,6 +34,7 @@ public class DAO {
             stmt.execute(sb.toString());
             sb = new StringBuilder();
             sb.append(" create user if not exists 'root'@'jeffersonmendes_pgm4' identified by 'testando' ");
+            stmt.execute(sb.toString());
             conn = ConnectionFactory.connection("jeffersonmendes_pgm4", "root", "testando");
             stmt = conn.createStatement();
             sb = new StringBuilder();
