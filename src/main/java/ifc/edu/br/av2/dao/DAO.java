@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,11 +27,15 @@ public class DAO {
     
     private void init() {
         try {
-            Connection conn = ConnectionFactory.connection();
+            Connection conn = ConnectionFactory.connection("localhost", "root", "");
             Statement stmt = conn.createStatement();
             StringBuilder sb = new StringBuilder();
             sb.append(" create database if not exists jeffersonmendes_pgm4 ");
             stmt.execute(sb.toString());
+            sb = new StringBuilder();
+            sb.append(" create user if not exists 'root'@'jeffersonmendes_pgm4' identified by 'testando' ");
+            conn = ConnectionFactory.connection("jeffersonmendes_pgm4", "root", "testando");
+            stmt = conn.createStatement();
             sb = new StringBuilder();
             sb.append(" create table if not exists usuario ")
                     .append(" (id integer not null, ")
@@ -73,7 +76,7 @@ public class DAO {
     
     public void insert(Object o) {
         try {
-            Connection conn = ConnectionFactory.connection();
+            Connection conn = ConnectionFactory.connection("jeffersonmendes_pgm4", "root", "testando");
             if (o.getClass().isInstance(Cliente.class)) {
                 inserirUsuario((Usuario) o, conn);
                 inserirCliente((Cliente) o, conn);
@@ -145,7 +148,7 @@ public class DAO {
     private List executeQuery(String tableName, String columns, String restrictions) {
         List<?> res = new ArrayList<>();
         try {
-            Connection conn = ConnectionFactory.connection();
+            Connection conn = ConnectionFactory.connection("jeffersonmendes_pgm4", "root", "testando");
             Statement stmt = conn.createStatement();
             StringBuilder sb = new StringBuilder();
             sb.append(" select ").append(columns != null ? columns : "*")
@@ -165,7 +168,7 @@ public class DAO {
     public List executePreparedQuery(String tableName, String columns, String restrictions, List<?> parameters) {
         List<?> res = new ArrayList<>();
         try {
-            Connection conn = ConnectionFactory.connection();
+            Connection conn = ConnectionFactory.connection("jeffersonmendes_pgm4", "root", "testando");
             StringBuilder sb = new StringBuilder();
             sb.append(" select ").append(columns != null ? columns : "*")
                     .append(" from ").append(tableName);
