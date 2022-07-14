@@ -1,12 +1,13 @@
 package ifc.edu.br.av2.model;
 
 public class Embarcacao {
-    
+    private String nome;
     private int tamanho;
     private String tipo;
     private Usuario proprietario;
 
-    public Embarcacao(int tamanho, String tipo, Usuario proprietario) {
+    public Embarcacao(String nome, int tamanho, String tipo, Usuario proprietario) {
+        this.nome = nome;
         this.tamanho = tamanho;
         this.tipo = tipo;
         this.proprietario = proprietario;
@@ -29,6 +30,14 @@ public class Embarcacao {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+    
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public Usuario getProprietario() {

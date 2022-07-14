@@ -15,6 +15,7 @@
             <thead>
                 <tr>
                     <th colspan="1">id</th>
+                    <th colspan="1">nome</th>
                     <th colspan="1">tamanho</th>
                     <th colspan="1">tipo</th>
                     <th colspan="1">proprietario</th>
@@ -26,6 +27,7 @@
     %>
             <tr>
             <td><%=embarcacao.get("id")%></td>
+            <td><%=embarcacao.get("nome")%></td>
             <td><%=embarcacao.get("tipo")%></td>
             <td><%=embarcacao.get("tamanho")%></td>
             <td><%=embarcacao.get("idUsuario")%></td>

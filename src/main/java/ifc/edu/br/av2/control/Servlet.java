@@ -96,11 +96,12 @@ public class Servlet extends HttpServlet {
     
     private void cadastraEmbarcacao(HttpServletRequest request)
             throws ServletException, IOException {
+        String nome = request.getParameter("nome");
         int tamanho = Utilitarios.validaInteger(request.getParameter("tamanho"));
         String tipo = request.getParameter("tipo");
         int idProprietario = Utilitarios.validaInteger(request.getParameter("idUsuario"));
         Usuario proprietario = dao.consultarCliente(idProprietario);
-        dao.insert(new Embarcacao(tamanho, tipo, proprietario));
+        dao.insert(new Embarcacao(nome, tamanho, tipo, proprietario));
     }
     
     private void cadastraVendedor(HttpServletRequest request)

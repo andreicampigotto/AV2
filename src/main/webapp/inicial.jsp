@@ -16,9 +16,13 @@
         <br> <button type="submit" name="op" value=visualizarClientes>Visualizar todos os clientes</button>
         <br> <button type="submit" name="op" value=visualizarVendedores>Visualizar todos os vendedores</button>
         <br> <button type="submit" name="op" value=visualizarEmbarcacoes>Visualizar todas as Embarcações</button>
+        
         <br> <button type="submit" name="op" value=cadastroCliente>Cadastrar novo cliente</button>
         <br> <button type="submit" name="op" value=cadastroVendedor>Cadastrar novo vendedor</button>
         <br> <button type="submit" name="op" value=cadastroEmbarcacao>Cadastrar nova Embarcação</button>
+        
+        <br> <button type="submit" name="op" value=locacao>Locação</button>
+        
         </form>
     </body>
 </html>

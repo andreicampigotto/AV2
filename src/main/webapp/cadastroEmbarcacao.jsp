@@ -9,6 +9,7 @@
     </head>
      <body>
         <form action="Servlet?op=cadastraEmbarcacao" method="post">
+            Nome: <input type="text" name="nome">
             Tamanho: <input type="text" name="tamanho">
             Tipo: <input type="text" name="tipo"> <br>
             Proprietário: 
