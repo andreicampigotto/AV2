@@ -12,15 +12,12 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <form action="Servlet" method="post">
+        <form action="Servlet?op=cadastraVendedor" method="post">
             Matricula <input type="text" name="matricula"> <br>
             Nome: <input type="text" name="nome"> <br>
             Email: <input type="text" name="email"> <br>
             CPF: <input type="text" name="cpf"> <br>
             Senha: <input type="text" name="senha"> <br>
-            
-  
-            <input type="hidden" name="parent" value="vendedor">
             <input type="submit" value="Cadastrar">
         </form>
         <a href="index.html">Retornar ao início</a>

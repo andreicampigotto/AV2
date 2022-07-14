@@ -6,7 +6,8 @@ import java.sql.SQLException;
 
 public class ConnectionFactory {
     
-    public static Connection connection(String db, String user, String pass) throws SQLException {
+    public static Connection connection(String db, String user, String pass) throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.jdbc.Driver");
         String url = "jdbc:mysql://localhost:3306/" + db + "?useSSL=false";
         return DriverManager.getConnection(url, user, pass);
     }

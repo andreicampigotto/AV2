@@ -1,10 +1,6 @@
-<%-- 
-    Document   : cadastroEmbarcacao
-    Created on : Jul 13, 2022, 1:07:25 PM
-    Author     : andre
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"
+        import="java.util.*"
+        import="ifc.edu.br.av2.model.*"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,23 +8,20 @@
         <title>JSP Page</title>
     </head>
      <body>
-        <form action="Servlet" method="post">
+        <form action="Servlet?op=cadastraEmbarcacao" method="post">
             Tamanho: <input type="text" name="tamanho">
             Tipo: <input type="text" name="tipo"> <br>
             Proprietário: 
-        <select name="carros">
+        <select name="idUsuario">
     <%
-        ArrayList<Cliente> clientes = (ArrayList<Cliente>) request.getAttribute("clientes");
-        for (Cliente cliente : clientes) {
+        ArrayList<HashMap<String, Object>> clientes = (ArrayList<HashMap<String, Object>>) request.getAttribute("clientes");
+        for (HashMap<String, Object> cliente : clientes) {
     %>
-            <option value="<%=cliente.getId()%>"><%=cliente.getNome()%></option>
+            <option value="<%=cliente.get("id")%>"><%=cliente.get("nome")%></option>
     <%
         }
     %>
         </select> <br>
-            
-            
-            <input type="hidden" name="parent" value="embarcacao">
             <input type="submit" value="Cadastrar">
         </form>
         <a href="index.html">Retornar ao início</a>

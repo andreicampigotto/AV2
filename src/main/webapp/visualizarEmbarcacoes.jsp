@@ -1,10 +1,6 @@
-<%-- 
-    Document   : embarcacoes
-    Created on : Jul 13, 2022, 1:20:33 PM
-    Author     : andre
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"
+        import="java.util.*"
+        import="ifc.edu.br.av2.model.*"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,7 +9,7 @@
     </head>
     <body>
     <%
-        ArrayList<Embarcacao> embarcacoes = (ArrayList<Embarcacao>) request.getAttribute("embarcacoes");
+        ArrayList<HashMap<String, Object>> embarcacoes = (ArrayList<HashMap<String, Object>>) request.getAttribute("visualizarEmbarcacoes");
     %>
         <table>
             <thead>
@@ -26,13 +22,13 @@
             </thead>
             <tbody>
     <%
-        for (Embarcacao embarcacao : embarcacoes) {
+        for (HashMap<String, Object> embarcacao : embarcacoes) {
     %>
             <tr>
-            <td><%=embarcacao.getId()%></td>
-            <td><%=embarcacao.getTipo()%></td>
-            <td><%=embarcacao.getTamanho()%></td>
-            <td><%=embarcacao.getProprietario().getNome()%></td>
+            <td><%=embarcacao.get("id")%></td>
+            <td><%=embarcacao.get("tipo")%></td>
+            <td><%=embarcacao.get("tamanho")%></td>
+            <td><%=embarcacao.get("idUsuario")%></td>
             </tr>
     <%
         }

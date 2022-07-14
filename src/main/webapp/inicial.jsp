@@ -13,14 +13,12 @@
     </head>
     <body>
         <form action="Servlet" method="get">
-        <br> <button type="submit" name="visualizarClientes">Visualizar todas os clientes</button>
-        <br> <button type="submit" name="visualizarVendedores">Visualizar todas os vendedores</button>
-        <br> <button type="submit" name="visualizarEmbarcacoes">Visualizar todas os Embarcações</button>
-        
-        <br> <button type="submit" name="cadastroCliente">Cadastrar novo cliente</button>
-        <br> <button type="submit" name="cadastroVendedor">Cadastrar novo vendedor</button>
-        <br> <button type="submit" name="cadastroEmbarcacao">Cadastrar nova Embarcação</button>
-        
+        <br> <button type="submit" name="op" value=visualizarClientes>Visualizar todos os clientes</button>
+        <br> <button type="submit" name="op" value=visualizarVendedores>Visualizar todos os vendedores</button>
+        <br> <button type="submit" name="op" value=visualizarEmbarcacoes>Visualizar todas as Embarcações</button>
+        <br> <button type="submit" name="op" value=cadastroCliente>Cadastrar novo cliente</button>
+        <br> <button type="submit" name="op" value=cadastroVendedor>Cadastrar novo vendedor</button>
+        <br> <button type="submit" name="op" value=cadastroEmbarcacao>Cadastrar nova Embarcação</button>
         </form>
     </body>
 </html>

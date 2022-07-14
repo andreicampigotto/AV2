@@ -1,10 +1,6 @@
-<%-- 
-    Document   : lista
-    Created on : 30 Jun 2022, 00:37:09
-    Author     : User
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"
+        import="java.util.*"
+        import="ifc.edu.br.av2.model.*"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,12 +9,12 @@
     </head>
     <body>
     <%
-        ArrayList<Cliente> clientes = (ArrayList<Cliente>) request.getAttribute("clientes");
+        ArrayList<HashMap<String, Object>> vendedores = (ArrayList<HashMap<String, Object>>) request.getAttribute("visualizarVendedores");
     %>
         <table>
             <thead>
                 <tr>
-                    <th colspan="1">id</th>
+                    <th colspan="1">matricula</th>
                     <th colspan="1">nome</th>
                     <th colspan="1">email</th>
                     <th colspan="1">cpf</th>
@@ -26,13 +22,13 @@
             </thead>
             <tbody>
     <%
-        for (Cliente cliente : clientes) {
+        for (HashMap<String, Object> vendedor : vendedores) {
     %>
             <tr>
-            <td><%=cliente.getId()%></td>
-            <td><%=cliente.getNome()%></td>
-            <td><%=cliente.getEmail()%></td>
-            <td><%=cliente.getCpf()%></td>
+            <td><%=vendedor.get("id")%></td>
+            <td><%=vendedor.get("nome")%></td>
+            <td><%=vendedor.get("email")%></td>
+            <td><%=vendedor.get("cpf")%></td>
             </tr>
     <%
         }

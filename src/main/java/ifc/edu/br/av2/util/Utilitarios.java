@@ -26,4 +26,21 @@ public class Utilitarios {
         return resultado;
     }
     
+    public static Integer validaInteger(Object valor) {
+        return valor == null || "".equals(valor.toString()) ? 0 : Integer.valueOf(valor.toString());
+    }
+    
+    public static String validaString(Object valor) {
+        return valor == null ? "" : String.valueOf(valor);
+    }
+    
+    public static Long validaLong(Object valor) {
+        return valor == null || "".equals(valor.toString()) ? 0L : Long.valueOf(valor.toString());
+    }
+    
+    public static Long validaLong(Object valor, Long def) {
+        Long v = validaLong(valor);
+        return v == 0L ? def : v;
+    }
+
 }
