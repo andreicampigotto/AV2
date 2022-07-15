@@ -19,9 +19,10 @@
         
         <br> <button type="submit" name="op" value=cadastroCliente>Cadastrar novo cliente</button>
         <br> <button type="submit" name="op" value=cadastroVendedor>Cadastrar novo vendedor</button>
-        <br> <button type="submit" name="op" value=cadastroEmbarcacao>Cadastrar nova Embarcação</button>
+        <br> <button type="submit" name="op" value=cadastroEmbarcacao>Cadastrar nova embarcação</button>
+        <br> <button type="submit" name="op" value=cadastroVagas>Cadastrar vagas</button>
         
-        <br> <button type="submit" name="op" value=locacao>Locação</button>
+        <br> <button type="submit" name="op" value=locacao>Marina</button>
         <br> <button type="submit" name="op" value=venda>Venda</button>
         
         </form>
