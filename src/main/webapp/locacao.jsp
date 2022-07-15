@@ -1,10 +1,6 @@
-<%-- 
-    Document   : locacao
-    Created on : Jul 14, 2022, 2:06:21 PM
-    Author     : andre
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"
+        import="java.util.*"
+        import="ifc.edu.br.av2.model.*"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,7 +8,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <form action="Servlet?op=locacao" method="post">
+        <form action="Servlet?op=cadastraLocacao" method="post">
             Quantidade: <input type="text" name="quantidade">
             Embarcação: 
         <select name="idEmbarcacao">
@@ -25,39 +21,31 @@
         }
     %>
         </select> <br>
-            <input type="submit" value="Cadastrar">
-        </form>
-        
-        0<%
-        ArrayList<HashMap<String, Object>> embarcacoes = (ArrayList<HashMap<String, Object>>) request.getAttribute("visualizarEmbarcacoes");
-    %>
-        <table>
-            <thead>
-                <tr>
-                    <th colspan="1">id</th>
-                    <th colspan="1">nome</th>
-                    <th colspan="1">tamanho</th>
-                    <th colspan="1">tipo</th>
-                    <th colspan="1">proprietario</th>
-                </tr>
-            </thead>
-            <tbody>
+        Cliente:
+        <select name="idUsuario">
     <%
-        for (HashMap<String, Object> embarcacao : embarcacoes) {
+        ArrayList<HashMap<String, Object>> clientes = (ArrayList<HashMap<String, Object>>) request.getAttribute("clientes");
+        for (HashMap<String, Object> cliente : clientes) {
     %>
-            <tr>
-            <td><%=embarcacao.get("id")%></td>
-            <td><%=embarcacao.get("nome")%></td>
-            <td><%=embarcacao.get("tipo")%></td>
-            <td><%=embarcacao.get("tamanho")%></td>
-            <td><%=embarcacao.get("idUsuario")%></td>
-            </tr>
+            <option value="<%=cliente.get("id")%>"><%=cliente.get("nome")%></option>
     <%
         }
-    %>       
-            </tbody>
-        </table>
-        
+    %>
+        </select> <br>
+        Marina:
+        <select name="idMarina">
+    <%
+        ArrayList<HashMap<String, Object>> marinas = (ArrayList<HashMap<String, Object>>) request.getAttribute("marinas");
+        for (HashMap<String, Object> marina : marinas) {
+    %>
+            <option value="<%=marina.get("id")%>"><%=marina.get("id")%></option>
+    <%
+        }
+    %>
+        </select> <br>
+        Valor: <input type="text" name="valor"> <br>
+            <input type="submit" value="Cadastrar">
+        </form>
         <a href="index.html">Retornar ao início</a>
     </body>
 </html>

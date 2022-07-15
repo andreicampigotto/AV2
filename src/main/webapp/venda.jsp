@@ -1,10 +1,6 @@
-<%-- 
-    Document   : venda
-    Created on : Jul 14, 2022, 2:31:36 PM
-    Author     : andre
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"
+        import="java.util.*"
+        import="ifc.edu.br.av2.model.*"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,7 +8,7 @@
         <title>JSP Page</title>
     </head>
   <body>
-        <form action="Servlet?op=venda" method="post">
+        <form action="Servlet?op=cadastraVenda" method="post">
             Cliente:
         <select name="idUsuario">
     <%
@@ -43,11 +39,12 @@
         ArrayList<HashMap<String, Object>> vendedores = (ArrayList<HashMap<String, Object>>) request.getAttribute("vendedores");
         for (HashMap<String, Object> vendedor : vendedores) {
     %>
-            <option value="<%=vendedor.get("matricula")%>"><%=vendedor.get("nome")%></option>
+            <option value="<%=vendedor.get("id")%>"><%=vendedor.get("nome")%></option>
     <%
         }
     %>
         </select> <br>
+        Valor: <input type="text" name="valor"> <br>
         
             <input type="submit" value="Cadastrar">
         </form>

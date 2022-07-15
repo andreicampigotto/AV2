@@ -42,5 +42,9 @@ public class Utilitarios {
         Long v = validaLong(valor);
         return v == 0L ? def : v;
     }
+    
+    public static Float validaFloat(Object obj) {
+        return (obj == null || "".equals(obj.toString()) ? 0 : Float.valueOf(obj.toString()));
+    }
 
 }

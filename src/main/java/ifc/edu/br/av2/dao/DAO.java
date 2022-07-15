@@ -3,6 +3,7 @@ package ifc.edu.br.av2.dao;
 import ifc.edu.br.av2.consts.TableName;
 import ifc.edu.br.av2.model.Cliente;
 import ifc.edu.br.av2.model.Embarcacao;
+import ifc.edu.br.av2.model.Marina;
 import ifc.edu.br.av2.model.Usuario;
 import ifc.edu.br.av2.model.Vendedor;
 import ifc.edu.br.av2.util.Utilitarios;
@@ -71,6 +72,36 @@ public class DAO {
                     .append(" idUsuario integer, ")
                     .append(" primary key (id), ")
                     .append(" foreign key (idUsuario) references ").append(TableName.USUARIO).append(" (id)) ");
+            stmt.executeUpdate(sb.toString());
+            sb = new StringBuilder();
+            sb.append(" create table if not exists ").append(TableName.VENDA_BARCO)
+                    .append(" (id integer not null, ")
+                    .append(" idEmbarcacao integer, ")
+                    .append(" idVendedor integer, ") 
+                    .append(" idCliente integer, ")
+                    .append(" valor varchar(255), ")
+                    .append(" primary key (id), ")
+                    .append(" foreign key (idEmbarcacao) references ").append(TableName.EMBARCACAO).append(" (id) ")
+                    .append(" foreign key (idVendedor) references ").append(TableName.VENDEDOR).append(" (id) ")
+                    .append(" foreign key (idCliente) references ").append(TableName.CLIENTE).append(" (id)) ");
+            stmt.executeUpdate(sb.toString());
+            sb = new StringBuilder();
+            sb.append(" create table if not exists ").append(TableName.LOCACAO_GARAGEM_BARCO)
+                    .append(" (id integer not null, ")
+                    .append(" idEmbarcacao integer, ")
+                    .append(" idCliente integer, ")
+                    .append(" idMarina integer, ")
+                    .append(" valor varchar(255), ")
+                    .append(" primary key (id), ")
+                    .append(" foreign key (idEmbarcacao) references ").append(TableName.EMBARCACAO).append(" (id) ")
+                    .append(" foreign key (idCliente) references ").append(TableName.CLIENTE).append(" (id) ")
+                    .append(" foreign key (idMarina) references ").append(TableName.MARINA).append(" (id)) ");
+            stmt.executeUpdate(sb.toString());
+            sb = new StringBuilder();
+            sb.append(" create table if not exists ").append(TableName.MARINA)
+                    .append(" (id integer not null, ")
+                    .append(" totalVagas integer, ")
+                    .append(" primary key (id)) ");
             stmt.executeUpdate(sb.toString());
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -213,7 +244,7 @@ public class DAO {
         sb.append(" a.idUsuario = b.id ")
                 .append(" and a.id = ").append(id);
         Object queryRes = executeQuery(TableName.CLIENTE + " a, " + TableName.USUARIO + " b ", sb.toString()).get(0);
-        if (queryRes.getClass().isInstance(Cliente.class)) {
+        if (queryRes instanceof Cliente) {
             c = (Cliente) queryRes;
         }
         return c;
@@ -225,7 +256,7 @@ public class DAO {
         sb.append(" a.idUsuario = b.id ")
                 .append(" and a.id = ").append(id);
         Object queryRes = executeQuery(TableName.VENDEDOR + " a, " + TableName.USUARIO + " b ", sb.toString()).get(0);
-        if (queryRes.getClass().isInstance(Vendedor.class)) {
+        if (queryRes instanceof Vendedor) {
             v = (Vendedor) queryRes;
         }
         return v;
@@ -234,7 +265,7 @@ public class DAO {
     public Embarcacao consultarEmbarcacao(long id) {
         Embarcacao e = new Embarcacao();
         Object queryRes = executeQuery(TableName.EMBARCACAO + " a", "a.id = " + id).get(0);
-        if (queryRes.getClass().isInstance(Embarcacao.class)) {
+        if (queryRes instanceof Embarcacao) {
             e = (Embarcacao) queryRes;
         }
         return e;
@@ -252,7 +283,7 @@ public class DAO {
             }
         };
         Object queryRes = executeQuery(TableName.USUARIO + " a", "a.id = " + id).get(0);
-        if (queryRes.getClass().isInstance(Usuario.class)) {
+        if (queryRes instanceof Usuario) {
             u = (Usuario) queryRes;
         }
         return u;
@@ -270,10 +301,19 @@ public class DAO {
             }
         };
         Object queryRes = executeQuery(TableName.USUARIO + " a", restriction).get(0);
-        if (queryRes.getClass().isInstance(Usuario.class)) {
+        if (queryRes instanceof Usuario) {
             u = (Usuario) queryRes;
         }
         return u;
+    }
+    
+    public Marina consultarMarina(long id) {
+        Marina marina = new Marina();
+        Object queryRes = executeQuery(TableName.MARINA + " a", "a.id = " + id).get(0);
+        if (queryRes instanceof Marina) {
+            marina = (Marina) queryRes;
+        }
+        return marina;
     }
 
 }
