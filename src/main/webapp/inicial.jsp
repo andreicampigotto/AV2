@@ -9,9 +9,10 @@
         <%
             String login = (String) session.getAttribute("login");
         %>
-        Você está logado com o usuário: <%=login%>
-        <hr>
         <form action="Servlet" method="get">
+        Você está logado com o usuário: <%=login%>
+        <button type="submit" name="op" value=logoff>logoff</button>
+        <hr>
         <br> <button type="submit" name="op" value=visualizarClientes>Visualizar todos os clientes</button>
         <br> <button type="submit" name="op" value=visualizarVendedores>Visualizar todos os vendedores</button>
         <br> <button type="submit" name="op" value=visualizarEmbarcacoes>Visualizar todas as Embarcações</button>

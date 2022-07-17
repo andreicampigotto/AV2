@@ -30,14 +30,19 @@ public class Servlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession sessao = request.getSession(true);
-        if (sessao.getAttribute("login") == null) {
-            String loginNoCookie = retornarCookieLogin(request);
-            if (loginNoCookie != null) {
-                sessao.setAttribute("login", loginNoCookie);
+        Cookie ckLogin = retornarCookieLogin(request);
+        String op = Utilitarios.validaString(request.getParameter("op"));
+        if (ckLogin != null) {
+            if (sessao.getAttribute("login") == null) {
+                sessao.setAttribute("login", ckLogin.getValue());
                 sessao.setAttribute("mensagem", "Bem vindo de volta!");
             }
+            if ("logoff".equals(op)) {
+                sessao.setAttribute("login", null);
+                ckLogin.setMaxAge(0);
+                response.addCookie(ckLogin);
+            }
         }
-        String op = Utilitarios.validaString(request.getParameter("op"));
         if (op.length() > 10 && "visualizar".equals(op.substring(0, 10))) {
             forwardVisualizar(request, response);
         } else if (op.length() > 8 && "cadastro".equals(op.substring(0, 8))) {
@@ -195,19 +200,19 @@ public class Servlet extends HttpServlet {
     
     private void addLoginSessao(HttpServletRequest request, HttpSession sessao) {
         if (sessao.getAttribute("login") == null) {
-            String loginCookie = retornarCookieLogin(request);
+            String loginCookie = retornarCookieLogin(request).getValue();
             if (loginCookie != null) {
                 sessao.setAttribute("login", loginCookie);
             }
         }
     }
     
-    private String retornarCookieLogin(HttpServletRequest request) {
+    private Cookie retornarCookieLogin(HttpServletRequest request) {
         Cookie listaCookies[] = request.getCookies();
         if (listaCookies != null) {
             for (Cookie c : listaCookies) {
                 if (c.getName().equals("loginCookie")) {
-                    return c.getValue();
+                    return c;
                 }
             }
         }
