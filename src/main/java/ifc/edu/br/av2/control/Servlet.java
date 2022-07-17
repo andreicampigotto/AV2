@@ -44,6 +44,7 @@ public class Servlet extends HttpServlet {
                 response.addCookie(ckLogin);
             }
         }
+        armanezarAcessosPaginas(request, response, op);
         if (op.length() > 10 && "visualizar".equals(op.substring(0, 10))) {
             forwardVisualizar(request, response);
         } else if (op.length() > 8 && "cadastro".equals(op.substring(0, 8))) {
@@ -213,16 +214,30 @@ public class Servlet extends HttpServlet {
         }
     }
     
-    private Cookie retornarCookieLogin(HttpServletRequest request) {
+    private Cookie retornarCookie(HttpServletRequest request, String nameCookie) {
         Cookie listaCookies[] = request.getCookies();
         if (listaCookies != null) {
             for (Cookie c : listaCookies) {
-                if (c.getName().equals("loginCookie")) {
+                if (c.getName().equals(nameCookie)) {
                     return c;
                 }
             }
         }
         return null;
+    }
+    
+    private Cookie retornarCookieLogin(HttpServletRequest request) {
+        return retornarCookie(request, "loginCookie");
+    }
+    
+    private void armanezarAcessosPaginas(HttpServletRequest request, HttpServletResponse response, String namePage) {
+        Cookie ckPagina = retornarCookie(request, namePage);
+        if (ckPagina == null) {
+            ckPagina = new Cookie(namePage, "1");
+        }
+        int visitas = Utilitarios.validaInteger(ckPagina.getValue()) + 1;
+        ckPagina.setValue(Utilitarios.validaString(visitas));
+        response.addCookie(ckPagina);
     }
     
     private void forwardVisualizar(HttpServletRequest request, HttpServletResponse response)
