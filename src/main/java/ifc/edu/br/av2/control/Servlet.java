@@ -233,7 +233,7 @@ public class Servlet extends HttpServlet {
     private void armanezarAcessosPaginas(HttpServletRequest request, HttpServletResponse response, String namePage) {
         Cookie ckPagina = retornarCookie(request, namePage);
         if (ckPagina == null) {
-            ckPagina = new Cookie(namePage, "1");
+            ckPagina = new Cookie(namePage, "0");
         }
         int visitas = Utilitarios.validaInteger(ckPagina.getValue()) + 1;
         ckPagina.setValue(Utilitarios.validaString(visitas));
