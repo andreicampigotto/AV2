@@ -215,13 +215,16 @@ public class Servlet extends HttpServlet {
     }
     
     private Cookie retornarCookie(HttpServletRequest request, String nameCookie) {
-        Cookie listaCookies[] = request.getCookies();
-        if (listaCookies != null) {
-            for (Cookie c : listaCookies) {
-                if (c.getName().equals(nameCookie)) {
-                    return c;
+        if (!nameCookie.isEmpty()) {
+            Cookie listaCookies[] = request.getCookies();
+            if (listaCookies != null) {
+                for (Cookie c : listaCookies) {
+                    if (c.getName().equals(nameCookie)) {
+                        return c;
+                    }
                 }
             }
+            return new Cookie(nameCookie, null);
         }
         return null;
     }
@@ -231,14 +234,14 @@ public class Servlet extends HttpServlet {
     }
     
     private void armanezarAcessosPaginas(HttpServletRequest request, HttpServletResponse response, String namePage) {
-        Cookie ckPagina = retornarCookie(request, namePage);
-        if (ckPagina == null) {
-            ckPagina = new Cookie(namePage, "0");
+        Object objCookie = retornarCookie(request, Utilitarios.validaString(namePage));
+        if (objCookie != null) {
+            Cookie ckPagina = (Cookie) objCookie;
             ckPagina.setMaxAge(24 * 60 * 60);
+            int visitas = Utilitarios.validaInteger(ckPagina.getValue()) + 1;
+            ckPagina.setValue(Utilitarios.validaString(visitas));
+            response.addCookie(ckPagina);
         }
-        int visitas = Utilitarios.validaInteger(ckPagina.getValue()) + 1;
-        ckPagina.setValue(Utilitarios.validaString(visitas));
-        response.addCookie(ckPagina);
     }
     
     private void forwardVisualizar(HttpServletRequest request, HttpServletResponse response)
