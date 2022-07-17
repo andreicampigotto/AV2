@@ -20,30 +20,21 @@ import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet(name = "", urlPatterns = {"/"})
 public class Servlet extends HttpServlet {
     DAO dao = new DAO(true);
     
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-    }
-
-    
    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
         HttpSession sessao = request.getSession(true);
         String op = Utilitarios.validaString(request.getParameter("op"));
-        if ("venda".equals(op)) {
-            forwardVenda(request, response);
-        } else if ("locacao".equals(op)) {
-            forwardLocacao(request, response);
-        } else if (op.length() > 10 && "visualizar".equals(op.substring(0, 10))) {
+        if (op.length() > 10 && "visualizar".equals(op.substring(0, 10))) {
             forwardVisualizar(request, response);
         } else if (op.length() > 8 && "cadastro".equals(op.substring(0, 8))) {
-            forwardCadastrar(request, response);
+            forwardCadastrar(request, response, sessao);
         } else if (sessao.getAttribute("login") != null) {
             getServletContext().getRequestDispatcher("/inicial.jsp").forward(request, response);
         } else {
@@ -53,20 +44,52 @@ public class Servlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession sessao = request.getSession(true);
         String op = request.getParameter("op");
         if ("validaLogin".equals(op)) {
             validaLogin(request, response);
         } else if ("cadastraCliente".equals(op)) {
-            cadastraCliente(request);
+            if (cadastraCliente(request)) {
+                sessao.setAttribute("mensagem", "Cliente cadastrado com sucesso!");
+            } else {
+                sessao.setAttribute("mensagem", "Ocorreu um erro ao cadastrar o cliente.");
+            }
         } else if ("cadastraEmbarcacao".equals(op)) {
-            cadastraEmbarcacao(request);
+            if (cadastraEmbarcacao(request)) {
+                sessao.setAttribute("mensagem", "Embarcação cadastrada com sucesso!");
+            } else {
+                sessao.setAttribute("mensagem", "Ocorreu um erro ao cadastrar a embarcação.");
+            }
         } else if ("cadastraVendedor".equals(op)) {
-            cadastraVendedor(request);
+            if (cadastraVendedor(request)) {
+                sessao.setAttribute("mensagem", "Vendedor cadastrado com sucesso!");
+            } else {
+                sessao.setAttribute("mensagem", "Ocorreu um erro ao cadastrar o vendedor.");
+            }
         } else if ("cadastraVenda".equals(op)) {
-            cadastraVenda(request);
+            if (cadastraVenda(request)) {
+                sessao.setAttribute("mensagem", "Venda cadastrada com sucesso!");
+            } else {
+                sessao.setAttribute("mensagem", "Ocorreu um erro ao cadastrar a venda.");
+            }
         } else if ("cadastraLocacao".equals(op)) {
-            cadastraLocacao(request);
+            if (cadastraLocacao(request)) {
+                sessao.setAttribute("mensagem", "Locação cadastrada com sucesso!");
+            } else {
+                sessao.setAttribute("mensagem", "Ocorreu um erro ao cadastrar a locação.");
+            }
+        } else if ("cadastraMarina".equals(op)) {
+            if (cadastraMarina(request)) {
+                sessao.setAttribute("mensagem", "Marina cadastrada com sucesso!");
+            } else {
+                sessao.setAttribute("mensagem", "Ocorreu um erro ao cadastrar a marina.");
+            }
+        } else if ("cadastraVagas".equals(op)) {
+            if (cadastraVagas(request)) {
+                sessao.setAttribute("mensagem", "Vagas cadastradas com sucesso!");
+            } else {
+                sessao.setAttribute("mensagem", "Ocorreu um erro ao cadastrar as vagas.");
+            }
         }
         getServletContext().getRequestDispatcher("/inicial.jsp").forward(request, response);
     }
@@ -92,40 +115,40 @@ public class Servlet extends HttpServlet {
             getServletContext().getRequestDispatcher("/inicial.jsp").forward(request, response);
         } else {
             sessao.setAttribute("mensagem", "Login e/ou senha incorretos, tente novamente.");
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            getServletContext().getRequestDispatcher("/login.jsp").forward(request, response);
         }
     }
     
-    private void cadastraCliente(HttpServletRequest request)
+    private boolean cadastraCliente(HttpServletRequest request)
             throws ServletException, IOException {
         String nome = request.getParameter("nome");
         String email = request.getParameter("email");
         String cpf = request.getParameter("cpf");
         String senha = request.getParameter("senha");
-        dao.insert(new Cliente(nome, cpf, email, senha));
+        return dao.insert(new Cliente(nome, cpf, email, senha));
     }
     
-    private void cadastraEmbarcacao(HttpServletRequest request)
+    private boolean cadastraEmbarcacao(HttpServletRequest request)
             throws ServletException, IOException {
         String nome = request.getParameter("nome");
         int tamanho = Utilitarios.validaInteger(request.getParameter("tamanho"));
         String tipo = request.getParameter("tipo");
         int idProprietario = Utilitarios.validaInteger(request.getParameter("idUsuario"));
         Usuario proprietario = dao.consultarCliente(idProprietario);
-        dao.insert(new Embarcacao(nome, tamanho, tipo, proprietario));
+        return dao.insert(new Embarcacao(nome, tamanho, tipo, proprietario));
     }
     
-    private void cadastraVendedor(HttpServletRequest request)
+    private boolean cadastraVendedor(HttpServletRequest request)
             throws ServletException, IOException {
         String matricula = request.getParameter("matricula");
         String nome = request.getParameter("nome");
         String cpf = request.getParameter("cpf");
         String email = request.getParameter("email");
         String senha = request.getParameter("senha");
-        dao.insert(new Vendedor(matricula, nome, cpf, email, senha));
+        return dao.insert(new Vendedor(matricula, nome, cpf, email, senha));
     }
     
-    private void cadastraVenda(HttpServletRequest request)
+    private boolean cadastraVenda(HttpServletRequest request)
             throws ServletException, IOException {
         long idCliente = Utilitarios.validaLong(request.getParameter("idUsuario"));
         long idEmbarcacao = Utilitarios.validaLong(request.getParameter("idEmbarcacao"));
@@ -134,10 +157,10 @@ public class Servlet extends HttpServlet {
         Vendedor vendedor = dao.consultarVendedor(idVendedor);
         Cliente cliente = dao.consultarCliente(idCliente);
         float valor = Utilitarios.validaFloat(request.getParameter("valor"));
-        dao.insert(new VendaBarco(embarcacao, vendedor, cliente, valor));
+        return dao.insert(new VendaBarco(embarcacao, vendedor, cliente, valor));
     }
     
-    private void cadastraLocacao(HttpServletRequest request)
+    private boolean cadastraLocacao(HttpServletRequest request)
             throws ServletException, IOException {
         long idEmbarcacao = Utilitarios.validaLong(request.getParameter("idEmbarcacao"));
         long idCliente = Utilitarios.validaLong(request.getParameter("idUsuario"));
@@ -146,7 +169,21 @@ public class Servlet extends HttpServlet {
         Cliente cliente = dao.consultarCliente(idCliente);
         Marina marina = dao.consultarMarina(idMarina);
         float valor = Utilitarios.validaFloat(request.getParameter("valor"));
-        dao.insert(new LocacaoGaragemBarco(embarcacao, cliente, valor, marina));
+        return dao.insert(new LocacaoGaragemBarco(embarcacao, cliente, valor, marina));
+    }
+    
+    private boolean cadastraMarina(HttpServletRequest request)
+            throws ServletException, IOException {
+        int vagas = Utilitarios.validaInteger(request.getParameter("vagas"));
+        return dao.insert(new Marina(vagas));
+    }
+    
+    private boolean cadastraVagas(HttpServletRequest request)
+            throws ServletException, IOException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id", Utilitarios.validaInteger(request.getParameter("idMarina")));
+        parameters.put("totalVagas", request.getParameter("vagas"));
+        return dao.update("Marina", parameters);
     }
     
     private void addLoginSessao(HttpServletRequest request, HttpSession sessao) {
@@ -184,6 +221,9 @@ public class Servlet extends HttpServlet {
             case "visualizarEmbarcacoes":
                 attribute = (ArrayList<HashMap<String, Object>>) dao.consultarEmbarcacoes();
                 break;
+            case "visualizarMarinas":
+                attribute = (ArrayList<HashMap<String, Object>>) dao.consultarMarinas();
+                break;
             default:
                 break;
         }
@@ -191,27 +231,41 @@ public class Servlet extends HttpServlet {
         getServletContext().getRequestDispatcher("/"+parameter+".jsp").forward(request, response);
     }
     
-    private void forwardCadastrar(HttpServletRequest request, HttpServletResponse response)
+    private void forwardCadastrar(HttpServletRequest request, HttpServletResponse response, HttpSession sessao)
             throws ServletException, IOException {
         String parameter = Utilitarios.validaString(request.getParameterMap().get("op")[0]);
         if ("cadastroEmbarcacao".equals(parameter)) {
             request.setAttribute("clientes", dao.consultarClientes());
         }
+        if ("cadastroVenda".equals(parameter)) {
+            request.setAttribute("embarcacoes", dao.consultarEmbarcacoes());
+            request.setAttribute("clientes", dao.consultarClientes());
+            request.setAttribute("vendedores", dao.consultarVendedores());
+        }
+        if ("cadastroLocacao".equals(parameter)) {
+            request.setAttribute("embarcacoes", dao.consultarEmbarcacoes());
+            request.setAttribute("clientes", dao.consultarClientes());
+            request.setAttribute("marinas", dao.consultarMarinas());
+        }
+        if ("cadastroVagas".equals(parameter)) {
+            List<?> marinas = dao.consultarMarinas();
+            abort(request, response, sessao, marinas.isEmpty(),
+                    "É necessário ter marinas cadastradas para alterar o número de vagas");
+            request.setAttribute("marinas", marinas);
+        }
         getServletContext().getRequestDispatcher("/"+parameter+".jsp").forward(request, response);
     }
     
-    private void forwardVenda(HttpServletRequest request, HttpServletResponse response)
+    private void abort(HttpServletRequest request,
+            HttpServletResponse response,
+            HttpSession sessao,
+            boolean condicao,
+            String mensagem)
             throws ServletException, IOException {
-        request.setAttribute("embarcacoes", dao.consultarEmbarcacoes());
-        request.setAttribute("clientes", dao.consultarClientes());
-        request.setAttribute("vendedores", dao.consultarVendedores());
-        getServletContext().getRequestDispatcher("/venda.jsp").forward(request, response);
-    }
-    
-    private void forwardLocacao(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.setAttribute("embarcacoes", dao.consultarEmbarcacoes());
-        getServletContext().getRequestDispatcher("/locacao.jsp").forward(request, response);
+        if (condicao) {
+            sessao.setAttribute("mensagem", mensagem);
+            getServletContext().getRequestDispatcher("/inicial.jsp").forward(request, response);
+        }
     }
     
     @Override

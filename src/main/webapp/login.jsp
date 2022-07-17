@@ -13,5 +13,9 @@
             Senha: <input type="password" name="senha"> <br>
             <input type="submit" value="Login" />
         </form>
+        <form action="Servlet" method="get">
+            <br> <button type="submit" name="op" value=cadastroVendedor>Cadastrar novo vendedor</button>
+        </form>
+        <jsp:include page="subPaginaMensagem.jsp"/>
     </body>
 </html>

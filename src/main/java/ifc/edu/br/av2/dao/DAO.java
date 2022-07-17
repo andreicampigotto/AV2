@@ -19,6 +19,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DAO {
+    
+    static final String BD = "jeffersonmendes_pgm4";
+    static final String BD_USER = "root";
+    static final String BD_PASSWORD = "testando";
 
     public DAO(boolean createTables) {
         if (createTables)
@@ -33,12 +37,13 @@ public class DAO {
             Connection conn = ConnectionFactory.connection("mysql", "root", "testando");
             Statement stmt = conn.createStatement();
             StringBuilder sb = new StringBuilder();
-            sb.append(" create database if not exists jeffersonmendes_pgm4 ");
+            sb.append(" create database if not exists ").append(BD);
             stmt.execute(sb.toString());
             sb = new StringBuilder();
-            sb.append(" create user if not exists 'root'@'jeffersonmendes_pgm4' identified by 'testando' ");
+            sb.append(" create user if not exists 'root'@'").append(BD)
+                    .append("' identified by '").append(BD_PASSWORD).append("' ");
             stmt.execute(sb.toString());
-            conn = ConnectionFactory.connection("jeffersonmendes_pgm4", "root", "testando");
+            conn = ConnectionFactory.connection(BD, BD_USER, BD_PASSWORD);
             stmt = conn.createStatement();
             sb = new StringBuilder();
             sb.append(" create table if not exists ").append(TableName.USUARIO)
@@ -81,9 +86,15 @@ public class DAO {
                     .append(" idCliente integer, ")
                     .append(" valor varchar(255), ")
                     .append(" primary key (id), ")
-                    .append(" foreign key (idEmbarcacao) references ").append(TableName.EMBARCACAO).append(" (id) ")
-                    .append(" foreign key (idVendedor) references ").append(TableName.VENDEDOR).append(" (id) ")
+                    .append(" foreign key (idEmbarcacao) references ").append(TableName.EMBARCACAO).append(" (id), ")
+                    .append(" foreign key (idVendedor) references ").append(TableName.VENDEDOR).append(" (id), ")
                     .append(" foreign key (idCliente) references ").append(TableName.CLIENTE).append(" (id)) ");
+            stmt.executeUpdate(sb.toString());
+            sb = new StringBuilder();
+            sb.append(" create table if not exists ").append(TableName.MARINA)
+                    .append(" (id integer not null, ")
+                    .append(" totalVagas integer, ")
+                    .append(" primary key (id)) ");
             stmt.executeUpdate(sb.toString());
             sb = new StringBuilder();
             sb.append(" create table if not exists ").append(TableName.LOCACAO_GARAGEM_BARCO)
@@ -93,24 +104,18 @@ public class DAO {
                     .append(" idMarina integer, ")
                     .append(" valor varchar(255), ")
                     .append(" primary key (id), ")
-                    .append(" foreign key (idEmbarcacao) references ").append(TableName.EMBARCACAO).append(" (id) ")
-                    .append(" foreign key (idCliente) references ").append(TableName.CLIENTE).append(" (id) ")
+                    .append(" foreign key (idEmbarcacao) references ").append(TableName.EMBARCACAO).append(" (id), ")
+                    .append(" foreign key (idCliente) references ").append(TableName.CLIENTE).append(" (id), ")
                     .append(" foreign key (idMarina) references ").append(TableName.MARINA).append(" (id)) ");
-            stmt.executeUpdate(sb.toString());
-            sb = new StringBuilder();
-            sb.append(" create table if not exists ").append(TableName.MARINA)
-                    .append(" (id integer not null, ")
-                    .append(" totalVagas integer, ")
-                    .append(" primary key (id)) ");
             stmt.executeUpdate(sb.toString());
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public void insert(Object o) {
+    public boolean insert(Object o) {
         try {
-            Connection conn = ConnectionFactory.connection("jeffersonmendes_pgm4", "root", "testando");
+            Connection conn = ConnectionFactory.connection(BD, BD_USER, BD_PASSWORD);
             if (o instanceof Cliente) {
                 inserirUsuario((Usuario) o, conn);
                 inserirCliente((Cliente) o, conn);
@@ -119,12 +124,16 @@ public class DAO {
                 inserirVendedor((Vendedor) o, conn);
             } else if (o instanceof Embarcacao) {
                 inserirEmbarcacao((Embarcacao) o, conn);
+            } else if (o instanceof Marina) {
+                inserirMarina((Marina) o , conn);
             }
-            conn.commit();
+            commit(conn);
             conn.close();
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
     
     private void inserirUsuario(Usuario u, Connection conn) throws SQLException {
@@ -171,6 +180,52 @@ public class DAO {
         ps.executeUpdate();
     }
     
+    private void inserirMarina(Marina m, Connection conn) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(" insert into " + TableName.MARINA
+                + " (id, totalVagas) "
+                + " values (?, ?) ");
+        ps.setLong(1, Utilitarios.validaLong(Utilitarios.validaString(((Map) executeQuery(TableName.MARINA, "max(id) + 1 id", null).get(0)).get("id")), 1L));
+        ps.setInt(2, m.getTotalVagas());
+        ps.executeUpdate();
+    }
+    
+    public boolean update(Object o, Map<String, Object> parameters) {
+        try {
+            Connection conn = ConnectionFactory.connection(BD, BD_USER, BD_PASSWORD);
+            if (o.toString().equals("Marina")) {
+                updateWithId(TableName.MARINA, parameters, conn);
+            }
+            commit(conn);
+            conn.close();
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+    
+    private void updateWithId(String tableName, Map<String, Object> parameters, Connection conn) throws SQLException {
+        Object id = parameters.get("id");
+        parameters.remove("id");
+        StringBuilder sb = new StringBuilder();
+        sb.append(" update ").append(tableName);
+        int i = 0;
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (i == 0) {
+                sb.append(" set ");
+            } else {
+                sb.append(", ");
+            }
+            sb.append(key).append(" = ").append(value);
+            i++;
+        }
+        sb.append(" where id = ").append(id);
+        Statement stmt = conn.createStatement();
+        stmt.executeUpdate(sb.toString());        
+    }
+    
     private List executeQuery(String tableName) {
         return executeQuery(tableName, null, null);
     }
@@ -182,7 +237,7 @@ public class DAO {
     private List executeQuery(String tableName, String columns, String restrictions) {
         List<?> res = new ArrayList<>();
         try {
-            Connection conn = ConnectionFactory.connection("jeffersonmendes_pgm4", "root", "testando");
+            Connection conn = ConnectionFactory.connection(BD, BD_USER, BD_PASSWORD);
             Statement stmt = conn.createStatement();
             StringBuilder sb = new StringBuilder();
             sb.append(" select ").append(columns != null ? columns : "*")
@@ -202,7 +257,7 @@ public class DAO {
     public List executePreparedQuery(String tableName, String columns, String restrictions, List<?> parameters) {
         List<?> res = new ArrayList<>();
         try {
-            Connection conn = ConnectionFactory.connection("jeffersonmendes_pgm4", "root", "testando");
+            Connection conn = ConnectionFactory.connection(BD, BD_USER, BD_PASSWORD);
             StringBuilder sb = new StringBuilder();
             sb.append(" select ").append(columns != null ? columns : "*")
                     .append(" from ").append(tableName);
@@ -236,6 +291,10 @@ public class DAO {
     
     public List consultarUsuarios() {
         return executeQuery(TableName.USUARIO);
+    }
+    
+    public List consultarMarinas() {
+        return executeQuery(TableName.MARINA);
     }
     
     public Cliente consultarCliente(long id) {
@@ -314,6 +373,12 @@ public class DAO {
             marina = (Marina) queryRes;
         }
         return marina;
+    }
+    
+    private void commit(Connection conn) throws SQLException {
+        if (!conn.getAutoCommit()) {
+            conn.commit();
+        }
     }
 
 }
