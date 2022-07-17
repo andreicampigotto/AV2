@@ -234,6 +234,7 @@ public class Servlet extends HttpServlet {
         Cookie ckPagina = retornarCookie(request, namePage);
         if (ckPagina == null) {
             ckPagina = new Cookie(namePage, "0");
+            ckPagina.setMaxAge(24 * 60 * 60);
         }
         int visitas = Utilitarios.validaInteger(ckPagina.getValue()) + 1;
         ckPagina.setValue(Utilitarios.validaString(visitas));
