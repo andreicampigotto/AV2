@@ -30,6 +30,13 @@ public class Servlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession sessao = request.getSession(true);
+        if (sessao.getAttribute("login") == null) {
+            String loginNoCookie = retornarCookieLogin(request);
+            if (loginNoCookie != null) {
+                sessao.setAttribute("login", loginNoCookie);
+                sessao.setAttribute("mensagem", "Bem vindo de volta!");
+            }
+        }
         String op = Utilitarios.validaString(request.getParameter("op"));
         if (op.length() > 10 && "visualizar".equals(op.substring(0, 10))) {
             forwardVisualizar(request, response);
@@ -199,7 +206,7 @@ public class Servlet extends HttpServlet {
         Cookie listaCookies[] = request.getCookies();
         if (listaCookies != null) {
             for (Cookie c : listaCookies) {
-                if (c.getName().equals("login")) {
+                if (c.getName().equals("loginCookie")) {
                     return c.getValue();
                 }
             }
