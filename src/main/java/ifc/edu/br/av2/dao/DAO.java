@@ -321,6 +321,11 @@ public class DAO {
         return v;
     }
     
+    public boolean isVendedor(long id) {
+        List<?> queryRes = executeQuery(TableName.VENDEDOR + " a ", " a.idUsuario = " + id);
+        return queryRes.size() > 0;
+    }
+    
     public Embarcacao consultarEmbarcacao(long id) {
         Embarcacao e = new Embarcacao();
         Object queryRes = executeQuery(TableName.EMBARCACAO + " a", "a.id = " + id).get(0);

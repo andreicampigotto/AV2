@@ -1,5 +1,6 @@
 package ifc.edu.br.av2.control;
 
+import ifc.edu.br.av2.consts.TableName;
 import ifc.edu.br.av2.dao.DAO;
 import ifc.edu.br.av2.model.Cliente;
 import ifc.edu.br.av2.model.Embarcacao;
@@ -103,7 +104,11 @@ public class Servlet extends HttpServlet {
                 sessao.setAttribute("mensagem", "Ocorreu um erro ao cadastrar as vagas.");
             }
         }
-        getServletContext().getRequestDispatcher("/inicial.jsp").forward(request, response);
+        if (sessao.getAttribute("login") != null) {
+            getServletContext().getRequestDispatcher("/inicial.jsp").forward(request, response);
+        } else {
+            getServletContext().getRequestDispatcher("/login.jsp").forward(request, response);
+        }
     }
 
     private void validaLogin(HttpServletRequest request, HttpServletResponse response)
@@ -115,10 +120,11 @@ public class Servlet extends HttpServlet {
         List<Object> params = new ArrayList<>();
         params.add(login);
         params.add(senha);
-        List<?> res = dao.executePreparedQuery("usuario", null, "nome = ? and senha = SHA(?)", params);
+        List<HashMap<String, Object>> res = dao.executePreparedQuery(TableName.USUARIO, null, "nome = ? and senha = SHA(?)", params);
         oklogin = !res.isEmpty();
         if (oklogin) {
             sessao.setAttribute("login", login);
+            sessao.setAttribute("idLogin", res.get(0).get("id"));
             sessao.setAttribute("mensagem", "Login efetuado com sucesso");
             Cookie ckLogin = new Cookie("loginCookie", login);
             ckLogin.setMaxAge(24 * 60 * 60);
