@@ -16,8 +16,8 @@
                 <tr>
                     <th colspan="1">id</th>
                     <th colspan="1">nome</th>
-                    <th colspan="1">tamanho</th>
                     <th colspan="1">tipo</th>
+                    <th colspan="1">tamanho</th>
                     <th colspan="1">proprietario</th>
                 </tr>
             </thead>

@@ -3,8 +3,10 @@ package ifc.edu.br.av2.dao;
 import ifc.edu.br.av2.consts.TableName;
 import ifc.edu.br.av2.model.Cliente;
 import ifc.edu.br.av2.model.Embarcacao;
+import ifc.edu.br.av2.model.LocacaoGaragemBarco;
 import ifc.edu.br.av2.model.Marina;
 import ifc.edu.br.av2.model.Usuario;
+import ifc.edu.br.av2.model.VendaBarco;
 import ifc.edu.br.av2.model.Vendedor;
 import ifc.edu.br.av2.util.Utilitarios;
 import java.sql.Connection;
@@ -13,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -72,6 +75,7 @@ public class DAO {
             sb = new StringBuilder();
             sb.append(" create table if not exists ").append(TableName.EMBARCACAO)
                     .append(" (id integer not null, ")
+                    .append(" nome varchar(255), ")
                     .append(" tamanho integer, ")
                     .append(" tipo varchar(255), ")
                     .append(" idUsuario integer, ")
@@ -126,6 +130,10 @@ public class DAO {
                 inserirEmbarcacao((Embarcacao) o, conn);
             } else if (o instanceof Marina) {
                 inserirMarina((Marina) o , conn);
+            } else if (o instanceof VendaBarco) {
+                inserirVenda((VendaBarco) o, conn);
+            } else if (o instanceof LocacaoGaragemBarco) {
+                inserirAluguel((LocacaoGaragemBarco) o, conn);
             }
             commit(conn);
             conn.close();
@@ -171,12 +179,13 @@ public class DAO {
      
     private void inserirEmbarcacao(Embarcacao e, Connection conn) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(" insert into " + TableName.EMBARCACAO
-                + " (id, tamanho, tipo, idUsuario) "
-                + " values (?, ?, ?, ?) ");
+                + " (id, nome, tamanho, tipo, idUsuario) "
+                + " values (?, ?, ?, ?, ?) ");
         ps.setLong(1, Utilitarios.validaLong(Utilitarios.validaString(((Map) executeQuery(TableName.EMBARCACAO, "max(id) + 1 id", null).get(0)).get("id")), 1L));
-        ps.setInt(2, e.getTamanho());
-        ps.setString(3, e.getTipo());
-        ps.setLong(4, e.getProprietario().getIdUsuario());
+        ps.setString(2, e.getNome());
+        ps.setInt(3, e.getTamanho());
+        ps.setString(4, e.getTipo());
+        ps.setLong(5, e.getProprietario().getId());
         ps.executeUpdate();
     }
     
@@ -186,6 +195,30 @@ public class DAO {
                 + " values (?, ?) ");
         ps.setLong(1, Utilitarios.validaLong(Utilitarios.validaString(((Map) executeQuery(TableName.MARINA, "max(id) + 1 id", null).get(0)).get("id")), 1L));
         ps.setInt(2, m.getTotalVagas());
+        ps.executeUpdate();
+    }
+    
+    private void inserirVenda(VendaBarco vb, Connection conn) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(" insert into " + TableName.VENDA_BARCO
+                + " (id, idEmbarcacao, idVendedor, idCliente, valor) "
+                + " values (?, ?, ?, ?, ?) ");
+        ps.setLong(1, Utilitarios.validaLong(Utilitarios.validaString(((Map) executeQuery(TableName.MARINA, "max(id) + 1 id", null).get(0)).get("id")), 1L));
+        ps.setInt(2, Utilitarios.validaInteger(vb.getEmbarcacao().getId()));
+        ps.setInt(3, Utilitarios.validaInteger(vb.getVendedor().getId()));
+        ps.setInt(4, Utilitarios.validaInteger(vb.getCliente().getId()));
+        ps.setFloat(5, Utilitarios.validaFloat(vb.getValor()));
+        ps.executeUpdate();
+    }
+    
+    private void inserirAluguel(LocacaoGaragemBarco lgb, Connection conn) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(" insert into " + TableName.LOCACAO_GARAGEM_BARCO
+                + " (id, idEmbarcacao, idCliente, idMarina, valor) "
+                + " values (?, ?, ?, ?, ?) ");
+        ps.setLong(1, Utilitarios.validaLong(Utilitarios.validaString(((Map) executeQuery(TableName.MARINA, "max(id) + 1 id", null).get(0)).get("id")), 1L));
+        ps.setInt(2, Utilitarios.validaInteger(lgb.getEmbarcacao().getId()));
+        ps.setInt(3, Utilitarios.validaInteger(lgb.getCliente().getId()));
+        ps.setInt(4, Utilitarios.validaInteger(lgb.getMarina().getId()));
+        ps.setFloat(5, Utilitarios.validaFloat(lgb.getValor()));
         ps.executeUpdate();
     }
     
@@ -278,11 +311,15 @@ public class DAO {
     }
     
     public List consultarClientes() {
-        return executeQuery(TableName.CLIENTE + " a, " + TableName.USUARIO + " b ", "a.idUsuario = b.id");
+        return executeQuery(TableName.CLIENTE + " a, " + TableName.USUARIO + " b ",
+                "a.*, b.nome, b.senha, b.cpf, b.email",
+                "a.idUsuario = b.id");
     }
      
     public List consultarVendedores() {
-        return executeQuery(TableName.VENDEDOR + " a, " + TableName.USUARIO + " b ", "a.idUsuario = b.id");
+        return executeQuery(TableName.VENDEDOR + " a, " + TableName.USUARIO + " b ",
+                "a.*, b.nome, b.senha, b.cpf, b.email",
+                "a.idUsuario = b.id");
     }
     
     public List consultarEmbarcacoes() {
@@ -297,14 +334,28 @@ public class DAO {
         return executeQuery(TableName.MARINA);
     }
     
+    public List consultarVendas() {
+        return executeQuery(TableName.VENDA_BARCO);
+    }
+    
+    public List consultarAlugueis() {
+        return executeQuery(TableName.LOCACAO_GARAGEM_BARCO);
+    }
+    
     public Cliente consultarCliente(long id) {
         Cliente c = new Cliente();
         StringBuilder sb = new StringBuilder();
         sb.append(" a.idUsuario = b.id ")
                 .append(" and a.id = ").append(id);
-        Object queryRes = executeQuery(TableName.CLIENTE + " a, " + TableName.USUARIO + " b ", sb.toString()).get(0);
-        if (queryRes instanceof Cliente) {
-            c = (Cliente) queryRes;
+        Map<String, Object> queryRes = (Map<String, Object>) executeQuery(TableName.CLIENTE + " a, " + TableName.USUARIO + " b ",
+                "a.*, b.nome, b.senha, b.cpf, b.email",
+                sb.toString()).get(0);
+        if (queryRes.size() > 0) {
+            c.setId(Utilitarios.validaLong(queryRes.get("id")));
+            c.setNome(Utilitarios.validaString(queryRes.get("nome")));
+            c.setEmail(Utilitarios.validaString(queryRes.get("email")));
+            c.setCpf(Utilitarios.validaString(queryRes.get("cpf")));
+            c.setSenha(Utilitarios.validaString(queryRes.get("senha")));
         }
         return c;
     }
@@ -314,9 +365,16 @@ public class DAO {
         StringBuilder sb = new StringBuilder();
         sb.append(" a.idUsuario = b.id ")
                 .append(" and a.id = ").append(id);
-        Object queryRes = executeQuery(TableName.VENDEDOR + " a, " + TableName.USUARIO + " b ", sb.toString()).get(0);
-        if (queryRes instanceof Vendedor) {
-            v = (Vendedor) queryRes;
+        Map<String, Object> queryRes = (Map<String, Object>) executeQuery(TableName.VENDEDOR + " a, " + TableName.USUARIO + " b ",
+                "a.*, b.nome, b.senha, b.cpf, b.email",
+                sb.toString()).get(0);
+        if (queryRes.size() > 0) {
+            v.setId(Utilitarios.validaLong(queryRes.get("id")));
+            v.setNome(Utilitarios.validaString(queryRes.get("nome")));
+            v.setEmail(Utilitarios.validaString(queryRes.get("email")));
+            v.setCpf(Utilitarios.validaString(queryRes.get("cpf")));
+            v.setSenha(Utilitarios.validaString(queryRes.get("senha")));
+            v.setMatricula(Utilitarios.validaString(queryRes.get("matricula")));
         }
         return v;
     }
@@ -328,9 +386,13 @@ public class DAO {
     
     public Embarcacao consultarEmbarcacao(long id) {
         Embarcacao e = new Embarcacao();
-        Object queryRes = executeQuery(TableName.EMBARCACAO + " a", "a.id = " + id).get(0);
-        if (queryRes instanceof Embarcacao) {
-            e = (Embarcacao) queryRes;
+        Map<String, Object> queryRes = (Map<String, Object>) executeQuery(TableName.EMBARCACAO + " a", "a.id = " + id).get(0);
+        if (queryRes.size() > 0) {
+            e.setId(Utilitarios.validaInteger(queryRes.get("id")));
+            e.setNome(Utilitarios.validaString(queryRes.get("nome")));
+            e.setTipo(Utilitarios.validaString(queryRes.get("tipo")));
+            e.setTamanho(Utilitarios.validaInteger(queryRes.get("tamanho")));
+            e.setProprietario(consultarCliente(Utilitarios.validaLong(queryRes.get("idUsuario"))));
         }
         return e;
     }
@@ -346,9 +408,13 @@ public class DAO {
             protected void createRecord() {
             }
         };
-        Object queryRes = executeQuery(TableName.USUARIO + " a", "a.id = " + id).get(0);
-        if (queryRes instanceof Usuario) {
-            u = (Usuario) queryRes;
+        Map<String, Object> queryRes = (Map<String, Object>) executeQuery(TableName.USUARIO + " a", "a.id = " + id).get(0);
+        if (queryRes.size() > 0) {
+            u.setId(Utilitarios.validaLong(queryRes.get("id")));
+            u.setNome(Utilitarios.validaString(queryRes.get("nome")));
+            u.setEmail(Utilitarios.validaString(queryRes.get("email")));
+            u.setCpf(Utilitarios.validaString(queryRes.get("cpf")));
+            u.setSenha(Utilitarios.validaString(queryRes.get("senha")));
         }
         return u;
     }
@@ -364,18 +430,23 @@ public class DAO {
             protected void createRecord() {
             }
         };
-        Object queryRes = executeQuery(TableName.USUARIO + " a", restriction).get(0);
-        if (queryRes instanceof Usuario) {
-            u = (Usuario) queryRes;
+        Map<String, Object> queryRes = (Map<String, Object>) executeQuery(TableName.USUARIO + " a", restriction).get(0);
+        if (queryRes.size() > 0) {
+            u.setId(Utilitarios.validaLong(queryRes.get("id")));
+            u.setNome(Utilitarios.validaString(queryRes.get("nome")));
+            u.setEmail(Utilitarios.validaString(queryRes.get("email")));
+            u.setCpf(Utilitarios.validaString(queryRes.get("cpf")));
+            u.setSenha(Utilitarios.validaString(queryRes.get("senha")));
         }
         return u;
     }
     
     public Marina consultarMarina(long id) {
         Marina marina = new Marina();
-        Object queryRes = executeQuery(TableName.MARINA + " a", "a.id = " + id).get(0);
-        if (queryRes instanceof Marina) {
-            marina = (Marina) queryRes;
+        Map<String, Object> queryRes = (Map<String, Object>) executeQuery(TableName.MARINA + " a", "a.id = " + id).get(0);
+        if (queryRes.size() > 0) {
+            marina.setId(Utilitarios.validaLong(queryRes.get("id")));
+            marina.setTotalVagas(Utilitarios.validaInteger(queryRes.get("totalVagas")));
         }
         return marina;
     }

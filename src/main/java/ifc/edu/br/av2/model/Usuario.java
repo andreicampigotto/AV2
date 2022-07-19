@@ -22,7 +22,7 @@ public abstract class Usuario {
     
     protected abstract void createRecord();
 
-    protected long getId() {
+    public long getId() {
         return id;
     }
     

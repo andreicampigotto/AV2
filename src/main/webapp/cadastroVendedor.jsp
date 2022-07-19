@@ -17,7 +17,7 @@
             Nome: <input type="text" name="nome"> <br>
             Email: <input type="text" name="email"> <br>
             CPF: <input type="text" name="cpf"> <br>
-            Senha: <input type="text" name="senha"> <br>
+            Senha: <input type="password" name="senha"> <br>
             <input type="submit" value="Cadastrar">
         </form>
         <a href="index.html">Retornar ao início</a>

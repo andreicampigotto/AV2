@@ -34,8 +34,9 @@ public class Servlet extends HttpServlet {
         Cookie ckLogin = retornarCookieLogin(request);
         String op = Utilitarios.validaString(request.getParameter("op"));
         if (ckLogin != null) {
-            if (sessao.getAttribute("login") == null) {
-                sessao.setAttribute("login", ckLogin.getValue());
+            if (sessao.getAttribute("idLogin") == null) {
+                sessao.setAttribute("idLogin", ckLogin.getValue());
+                sessao.setAttribute("login", dao.consultarUsuario(ckLogin.getValue()).getNome());
                 sessao.setAttribute("mensagem", "Bem vindo de volta!");
             }
             if ("logoff".equals(op)) {
@@ -122,12 +123,13 @@ public class Servlet extends HttpServlet {
         params.add(login);
         params.add(senha);
         List<HashMap<String, Object>> res = dao.executePreparedQuery(TableName.USUARIO, null, "nome = ? and senha = SHA(?)", params);
+        String idLogin = res.size() > 0 ? Utilitarios.validaString(res.get(0).get("id")) : null;
         oklogin = !res.isEmpty();
         if (oklogin) {
             sessao.setAttribute("login", login);
-            sessao.setAttribute("idLogin", res.get(0).get("id"));
+            sessao.setAttribute("idLogin", idLogin);
             sessao.setAttribute("mensagem", "Login efetuado com sucesso");
-            Cookie ckLogin = new Cookie("loginCookie", login);
+            Cookie ckLogin = new Cookie("loginCookie", idLogin);
             ckLogin.setMaxAge(24 * 60 * 60);
             response.addCookie(ckLogin);
             addLoginSessao(request, sessao);
@@ -224,7 +226,6 @@ public class Servlet extends HttpServlet {
                     }
                 }
             }
-            return new Cookie(nameCookie, null);
         }
         return null;
     }
@@ -260,6 +261,12 @@ public class Servlet extends HttpServlet {
                 break;
             case "visualizarMarinas":
                 attribute = (ArrayList<HashMap<String, Object>>) dao.consultarMarinas();
+                break;
+            case "visualizarVendas":
+                attribute = (ArrayList<HashMap<String, Object>>) dao.consultarVendas();
+                break;
+            case "visualizarAlugueis":
+                attribute = (ArrayList<HashMap<String, Object>>) dao.consultarAlugueis();
                 break;
             default:
                 break;

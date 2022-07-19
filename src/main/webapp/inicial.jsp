@@ -22,6 +22,8 @@
         <br> <button type="submit" name="op" value=visualizarVendedores>Visualizar todos os vendedores</button>
         <br> <button type="submit" name="op" value=visualizarEmbarcacoes>Visualizar todas as Embarcações</button>
         <br> <button type="submit" name="op" value=visualizarMarinas>Visualizar todas as Marinas</button>
+        <br> <button type="submit" name="op" value=visualizarVendas>Visualizar todas as Vendas</button>
+        <br> <button type="submit" name="op" value=visualizarAlugueis>Visualizar todas os Aluguéis</button>
         
         <%
             if (isVendedor) {

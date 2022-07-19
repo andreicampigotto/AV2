@@ -1,6 +1,8 @@
 package ifc.edu.br.av2.model;
 
 public class Embarcacao {
+    
+    private long id;
     private String nome;
     private int tamanho;
     private String tipo;
@@ -14,6 +16,14 @@ public class Embarcacao {
     }
 
     public Embarcacao() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public int getTamanho() {
